@@ -14,10 +14,11 @@ nita-leave-env
 .Python
 build/
 develop-eggs/
-
 downloads/
 eggs/
 .eggs/
+staticfiles/
+mediafiles/
 lib/
 lib64/
 parts/

@@ -13,11 +13,27 @@
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- icheck bootstrap -->
+<<<<<<< HEAD
   <!---<link rel="stylesheet" href="{% static 'adminDashboard/plugins/icheck-bootstrap/icheck-bootstrap.min.css'%}"> --->
   <!-- Theme style -->
  <!----- <link rel="stylesheet" href="{% static 'adminDashboard/dist/css/adminlte.min.css'%}"> ---->
+=======
+  <link rel="stylesheet" href="{% static 'adminDashboard/plugins/icheck-bootstrap/icheck-bootstrap.min.css'%}">
+
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'adminDashboard/dist/css/adminlte.min.css' %}">
+>>>>>>> d0eb01b18abb579fd15b1bcddc3e89953b0bbcf4
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+  <!--hosted on server -->
+<!-- jQuery -->
+<script src="{% static 'adminDashboard/plugins/jquery/jquery.min.js'%}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'adminDashboard/plugins/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'adminDashboard/dist/js/adminlte.min.js'%}"></script>
+<!---cdn links -->
 </head>
 {% block content %}
 
@@ -27,14 +43,7 @@
 
 
 {% endblock content %}
-<!--hosted on server -->
-<!-- jQuery -->
-<script src="{% static 'adminDashboard/plugins/jquery/jquery.min.js'%}"></script>
-<!-- Bootstrap 4 -->
-<script src="{% static 'adminDashboard/plugins/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
-<!-- AdminLTE App -->
-<script src="{% static 'adminDashboard/dist/js/adminlte.min.js'%}"></script>
-<!---cdn links -->
+
 
 </body>
 </html>
