@@ -19,13 +19,13 @@ class CreateUserForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2']
 
 DEPARTMENT_CHOICES = (
-    ("Developers", 'Developers'),
-    ("Business Analysts", 'Business Analysts'),
-    ("Field", 'Field'),
-    ("Deployment", 'Deployment'),
+    ("Business Transformation", 'Business Transformation'),
+    ("Communications", 'Communications'),
+    ("Data Center", 'Data center'),
+    ("Networks", 'Networks'),
     ("Infrastructure", 'Infrastructure'),
-    ("Customer Services", 'Customer Services'),
-    ("Policy", 'Policy'),
+    ("Service Desk ", 'Service Desk'),
+    ("Forenscis", 'Forenscis'),
     ("Contracts", 'Contracts'),
     ("Human Resources", 'Human Resources'),
     ("Procurement", 'Procurement'),
@@ -35,13 +35,14 @@ DEPARTMENT_CHOICES = (
 )
 
 DIRECTORATE_CHOICES = (
-    ("E-government Services", 'E-government Services'),
-    ("Technical Services", 'Technical Services'),
-    ("Information Security", 'Information Security'),
-    ("Regulation and Legal Services", 'Regulation and Legal Services'),
-    ("Finance and Administration", 'Finance and Administration'),
-    ("Planning, Research and Development", 'Planning, Research and Development'),
     ("Executive Director", 'Executive Director'),
+    ("Planning, Research and Development", 'Planning, Research and Development'),
+    ("Technical Services", 'Technical Services'),
+    ("Finance and Administration", 'Finance and Administration'),
+    ("E-government Services", 'E-government Services'),
+    ("Regulation and Legal Services", 'Regulation and Legal Services'),
+    ("Information Security", 'Information Security'),
+      
 )
 
 STAFF_ROLE_CHOICES = (
