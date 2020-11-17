@@ -1,8 +1,7 @@
-from django import forms 
-from django.forms import  ClearableFileInput
+from django import forms
+from django.forms import ClearableFileInput
 from adminDashboard.models import *
 from employeeDashboard.models import *
-
 
 
 class TimeInput(forms.TimeInput):
@@ -26,22 +25,21 @@ class DateTimeInput(forms.DateTimeInput):
 
 
 class LeaveForm(forms.ModelForm):
-
     OutstandingLeaveDays = forms.IntegerField(widget=forms.TextInput(
-        attrs={'readonly': 'readonly', 'placeholder': '26'})) #26 is a random number chosen for placeholder feature to work
+        attrs={'readonly': 'readonly', 'placeholder': '26'}))  # 26 is a random number chosen for placeholder feature to work
 
     NumberOfDaystaken = forms.IntegerField(widget=forms.TextInput(
-        attrs={'readonly': 'readonly', 'placeholder': '0'})) 
-        
+        attrs={'readonly': 'readonly', 'placeholder': '0'}))
+
     name = forms.CharField(widget=forms.TextInput(
         attrs={'readonly': 'readonly'}))
-    
+
     file_upload = forms.CharField(widget=ClearableFileInput(attrs={'multiple': True}), label="Upload your support files",
-                                 help_text="Attach any files here (10mb max per file)", required=False)
+                                  help_text="Attach any files here (10mb max per file)", required=False)
 
     class Meta:
         model = Leaves
-        
+
         fields = ['name', 'StartDate',
                   'EndDate', 'OutstandingLeaveDays', 'NumberOfDaystaken',
                   'LeaveType', 'empDirector',
@@ -68,4 +66,3 @@ class LeaveForm(forms.ModelForm):
         self.fields["name"].label = "Applicant Name"
         self.fields["OutstandingLeaveDays"].label = "Leave Days"
         self.fields["NumberOfDaystaken"].label = "Days Taken"
-

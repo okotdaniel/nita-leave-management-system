@@ -37,29 +37,25 @@ def allowed_users(allowed_roles=[]):
 count = 0
 old_users_name = ""
 
-def admin_redirect(view_func):
 
+def admin_redirect(view_func):
     def wrapper_func(request, *args, **kwargs):
         global old_users_name
         global count
         current_users_name = request.user.first_name + request.user.last_name
 
-        if old_users_name != current_users_name: #Someone new has logged in
+        if old_users_name != current_users_name:  # Someone new has logged in
             count = 0
             old_users_name = current_users_name
 
-
-        print("Inside admin redirect")
         if count == 0:
             if request.user.is_staff:
-                count = count + 1 #Used to ensure that once a user has logged in and accessed the adminDashboard they
-                                  #can still make an application for leave
+                count = count + 1  # Used to ensure that once a user has logged in and accessed the adminDashboard they
+                # can still make an application for leave
                 return redirect('adminDashboard:pending')
             else:
                 return view_func(request, *args, **kwargs)
         else:
             return view_func(request, *args, **kwargs)
 
-
     return wrapper_func
-

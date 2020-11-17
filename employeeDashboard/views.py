@@ -20,15 +20,14 @@ from .models import Feed
 
 decorators = [admin_redirect]
 
-@method_decorator(decorators, 'dispatch') # Determines whether an employee or privileged user(manager or director) has logged in
-class ApplyLeaveView(View):
 
+@method_decorator(decorators, 'dispatch')  # Determines whether an employee or privileged user(manager or director) has logged in
+class ApplyLeaveView(View):
     template_name = 'leaves_form.html'
 
     def get(self, request, *args, **kwargs):
         current_user = request.user.first_name + " " + request.user.last_name
         remaining_leave = 1000
-
 
         context = {}
 
@@ -40,7 +39,7 @@ class ApplyLeaveView(View):
         if request.user.OutstandingLeaveDays > 30:
             messages.warning(request, f'YOU HAVE TOO MANY LEAVE DAYS! PLEASE APPLY FOR LEAVE TO UNBLOCK THE PORTAL FOR YOUR SUPERVISOR')
 
-        out_of_leave = 0 #Used to ensure that "Remaining leave" doesn't go lower than this value
+        out_of_leave = 0  # Used to ensure that "Remaining leave" doesn't go lower than this value
         context['leave_form'] = leave_form
         context['out_of_leave'] = out_of_leave
         context['remaining_leave'] = remaining_leave
@@ -58,7 +57,7 @@ class ApplyLeaveView(View):
             send_mail(
                 subject="Leave Request",
                 message="Hello " + line_manager.first_name + " " + line_manager.last_name + " ,\n I am requesting to go for leave. "
-                                                  "\n Please go to the NITA Leave Management Portal to action this request.",
+                                                                                            "\n Please go to the NITA Leave Management Portal to action this request.",
                 from_email=request.user.email,
                 recipient_list=[line_manager.email]
             )
@@ -70,7 +69,7 @@ class ApplyLeaveView(View):
             send_mail(
                 subject="Leave Request",
                 message="Hello " + director.first_name + " " + director.last_name + " ,\n I am requesting to go for leave. "
-                                                     "\n Please go to the NITA Leave Management Portal to action this request.",
+                                                                                    "\n Please go to the NITA Leave Management Portal to action this request.",
                 from_email=request.user.email,
                 recipient_list=[director.email]
             )
@@ -81,22 +80,19 @@ class ApplyLeaveView(View):
             send_mail(
                 subject="Leave Request",
                 message="Hello " + executive_director.first_name + " " + executive_director.last_name + " ,\n I am requesting to go for leave. "
-                                                     "\n Please go to the NITA Leave Management Portal to action this request.",
+                                                                                                        "\n Please go to the NITA Leave Management Portal to action this request.",
                 from_email=request.user.email,
                 recipient_list=[executive_director.email]
             )
 
-
-
     def post(self, request, *args, **kwargs):
         context = {}
-
 
         leave_form = LeaveForm(request.POST, request.FILES)
 
         if leave_form.is_valid():
             leave_user = leave_form.save(commit=False)
-            result = leave_user.OutstandingLeaveDays - leave_user.NumberOfDaystaken #Calculates outstading leave days
+            result = leave_user.OutstandingLeaveDays - leave_user.NumberOfDaystaken  # Calculates outstading leave days
 
             if result < 0:
                 messages.warning(request, f'YOU HAVE EXCEEDED YOUR ALLOCATED NUMBER OF LEAVE DAYS')
@@ -114,7 +110,7 @@ class ApplyLeaveView(View):
             if request.user.role == "Executive Director":
                 leave_user.Approval_by_Line_Manager = "Approved"
                 leave_user.Approval_by_Director = "Approved"
-            
+
             leave_user.save()
 
             files = request.FILES.getlist('file_upload') or []
@@ -127,18 +123,15 @@ class ApplyLeaveView(View):
                         feed = Feed.objects.create(files=file)
                     leave_user.file_upload.add(feed)
 
-
             self.email_leave_request(request)
-            
+
             return redirect('employeeDashboard:history')
         else:
             context['leave_form'] = leave_form
             return render(request, self.template_name, context)
 
 
-
-
-def leave_history(request):  #Displays all leave requests a user has made
+def leave_history(request):  # Displays all leave requests a user has made
     current_user = request.user.first_name + " " + request.user.last_name
 
     leave_history = Leaves.objects.filter(name=current_user)
@@ -148,7 +141,8 @@ def leave_history(request):  #Displays all leave requests a user has made
     }
     return render(request, 'history.html', context)
 
-def cancel_request(request , *args, **kwargs):
+
+def cancel_request(request, *args, **kwargs):
     leave_id = kwargs.get('pk')
     selected_leave_request = get_object_or_404(Leaves, pk=leave_id)
     selected_leave_request.Approval_by_Line_Manager = 'Pending'
@@ -158,7 +152,6 @@ def cancel_request(request , *args, **kwargs):
 
     selected_leave_request.save()
 
-
     current_user = request.user.first_name + " " + request.user.last_name
     leave_history = Leaves.objects.filter(name=current_user)
 
@@ -166,5 +159,3 @@ def cancel_request(request , *args, **kwargs):
         'leave_history': leave_history
     }
     return render(request, 'history.html', context)
-
-

@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -26,15 +27,13 @@ SECRET_KEY = 'bqed@o2jxvgmhoubp@2&vt_^7&hk+k3*tpnj-9r6jg#usdo^*3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.255.0.74', '154.72.194.220', 'dms.nita.go.ug']
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.255.0.74', '154.72.194.220', 'http://10.16.32.11', 'dms.nita.go.ug']
 
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  #Development Only
-
-
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development Only
 
 # Application definition
+
 
 INSTALLED_APPS = [
     'UsersAuth',
@@ -52,7 +51,6 @@ INSTALLED_APPS = [
 
 ]
 
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 AUTH_USER_MODEL = 'UsersAuth.Account'
@@ -68,14 +66,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'leaveproject.urls'
-#TEMPLATES_DIR = os.path.dirname(os.path.dirname(__file__))
-#os.path.join(TEMPLATES_DIR, 'templates'
+# TEMPLATES_DIR = os.path.dirname(os.path.dirname(__file__))
+# os.path.join(TEMPLATES_DIR, 'templates'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates')
-            ],
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,7 +88,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'leaveproject.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -99,12 +96,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'nita_leave',
         'USER': 'postgres',
-        'PASSWORD': 'password',
+        'PASSWORD': 'deaN2020',
         'HOST': 'localhost',
         'PORT': 5432
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -124,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -136,7 +131,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-#USE_TZ = True
+# USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -150,6 +145,66 @@ STATICFILES_DIRS = [
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(  BASE_DIR, 'mediafiles' ) 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+os.environ['AD_PASSWORD'] = 'Chang3m3@2020!'
+
+"""
+Dictionary
+cn: Common name e.g. a group name assigned to user
+dn: Distinguished Name e.g. “uid=john.doe,ou=People,dc=example,dc=com”
+rdn: Relative Distinguished Name e.g. DN “uid=john.doe,ou=People,dc=example,dc=com” has 4 RDNs
+DIT: Directory Information Tree
+"""
+
+AUTH_LDAP_SERVER_URI = 'ldap://10.16.32.13:389'
+AUTH_LDAP_CONNECTION_OPTIONS = {ldap.OPT_REFERRALS: 0}
+
+AUTH_BASE_DN = "OU=NITA-U, OU=_Agency, DC=gou, DC=go, DC=ug"
+AUTH_LDAP_BIND_DN = "CN=dmsadmin, " + AUTH_BASE_DN
+AUTH_LDAP_BIND_PASSWORD = os.environ.get('AD_PASSWORD')
+LDAP_IGNORE_CERT_ERRORS = True
+
+AUTH_LDAP_USER_SEARCH = LDAPSearch(AUTH_BASE_DN, ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    'username': 'sAMAccountName',
+    'first_name': 'givenName',
+    'last_name': 'sn',
+    'email': 'mail'
+}
+
+AUTH_LDAP_GROUP_BASE = "OU=Groups, " + AUTH_BASE_DN
+AUTH_LDAP_GROUP_FILTER = "(objectClass=top)"
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(AUTH_LDAP_GROUP_BASE, ldap.SCOPE_SUBTREE, AUTH_LDAP_GROUP_FILTER)
+AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
+AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+    'is_active': 'CN=NITA All Staff, ' + AUTH_LDAP_GROUP_BASE,
+    'is_staff': 'CN=NITA All Staff, ' + AUTH_LDAP_GROUP_BASE,
+    'is_superuser': 'CN=WebDevs, ' + AUTH_LDAP_GROUP_BASE,
+}
+
+# This is the default, but I like to be explicit.
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+# Use LDAP group membership to calculate group permissions.
+AUTH_LDAP_FIND_GROUP_PERMS = True
+
+AUTH_LDAP_MIRROR_GROUPS = True
+
+# Cache distinguished names and group memberships for an hour to minimize
+# LDAP traffic.
+AUTH_LDAP_CACHE_TIMEOUT = 3600
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {"django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}},
+}
